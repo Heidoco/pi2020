@@ -94,10 +94,13 @@ def combate(personagem,inimigo):
     
     while personagem.vida > 0 and inimigo.vida > 0:
         print("\nVocê está sendo atacado por um "+ str(inimigo.nome)+"!")
+
+        print("|-------------------------------------------|")
+        print("| Vida Herói: " + str(personagem.vida))
+        print("| Vida " + str(inimigo.nome) + ": " + str(inimigo.vida))
+        print("|-------------------------------------------|")
         print("\n1 - Atacar\n\n2 - Fugir \n\n3 - Magia")
         escolha = input("\nQual a sua ação? : ")
-        print("|--------------------------------------------------------------|")
-
         #Ataque
         if int(escolha) == 1:
             dado = random.randint(1,20)
@@ -106,12 +109,11 @@ def combate(personagem,inimigo):
             if dado == 20:
                 inimigo.sofrer_dano(personagem.ataque, True)
                 print("Critico! O "+ str(inimigo.nome)+" sofreu " + str(personagem.ataque)+ " de dano")
-                print(str(inimigo.nome)+" agora tem: "+ str(inimigo.vida) + " de vida!")
 
             elif dado >= inimigo.armadura:
                 inimigo.sofrer_dano(personagem.ataque, False)
                 print("O "+ str(inimigo.nome)+" sofreu " + str(personagem.ataque)+ " de dano")
-                print(str(inimigo.nome)+" agora tem: "+ str(inimigo.vida) + " de vida!")
+
 
             else:                    
                     print("Você errou!")
@@ -120,8 +122,9 @@ def combate(personagem,inimigo):
         elif int(escolha) == 2:
             dado = random.randint(1,20)
             if dado>5:
+                fugir = True
                 print("Você Fugiu!")
-                jogo()
+                return(fugir)
             else:
                     print("Você não conseguiu fugir, agora será atacado!")
 
@@ -167,14 +170,15 @@ def combate(personagem,inimigo):
         #Ataque do monstro
         if inimigo.vida > 0:
             dado = random.randint(1,20)
+            print("O " + str(inimigo.nome) + " vai atacar!")
             if dado == 20:
                 print("Crítico!")
                 personagem.sofrer_dano(inimigo.ataque,True)
-                print("Você agora tem " + str(personagem.vida) + " pontos de vida!")
+                print("Você toma um golpe muito poderoso que tira "+ str(inimigo.ataque) + " pontos de vida")
             elif dado>personagem.armadura:
                 print("Você foi atacado!")
                 personagem.sofrer_dano(inimigo.ataque,False)
-                print("Você agora tem " + str(personagem.vida) + " pontos de vida!")
+                print("Você toma um golpe que tira "+ str(inimigo.ataque) + " pontos de vida")
             else:
                 print("Você esquivou do golpe!")
         else:
@@ -185,6 +189,9 @@ def jogo():
     print("Um nobre aventureiro chega as terras de Valak, agora dominadas por um terrivel demonio. Qual será o seu destino")
     nome = input("Digite o nome do seu personagem")
     personagem = Personagem(nome, 100, 10,12) 
+    mal = 0
+    bem = 0
+    vidamax = personagem.vida
 
     while True:
         print("___________________________________________________________\n Você esta nas estradas, você pode:\n 1 - Acampar \n 2 - Ir para alguma area \n 3 - Inventário ")
@@ -198,10 +205,38 @@ def jogo():
                 combate(personagem,satanas)
             else:
                 print("Você descançou e agora se sente revigorado!")
-                personagem.vida = 100
+                print(personagem.vida)
+                cura = personagem.vida-vidamax
+                print("Cura:" + str(cura))
+                personagem.sofrer_dano(cura,False)
+                print(personagem.vida)
                 print(sorte)
 
         if int(escolha) == 2:
             print("Para onde você quer ir?")
+            mortechefe = 0
+            if mortechefe < 4: 
+                print("1 - |Igreja|\n2 - |Cemitério|\n3 - |Quartel General|\n4 - |Floresta|")
+                escolha = int(input(""))
+#Igreja
+                if escolha == 1:
+                    print("Você se aproxima de uma igreja que aparenta ter perdido a sua divindade, agora coberta por vinhas e com as paredes quebradas a igreja se mostra um simbolo de terror")
+                    print("Ao entrar na igreja você encontra um monstro mutante de tamanho enorme que outrora poderia ter sido o padre")
+                    print("O monstro se vira para você e corre na sua direção")
+                    mutante = Inimigo("Mutante",150, 3, random.randint(20,25), 14)
+                    combate(personagem, mutante)
+                    print("Ao derrotar o mutante, você vê seu corpo no chão, o que você faz?")
+                    print("1 - Queimar no lugar em que ele foi derrotado\n2 - Enterrar com uma cerimônia")
+                    escolha = int(input(""))
+                    if escolha == 1:
+                        mal +=1
+                        personagem.armadura += 1 
+                        print("Do corpo em chamas sai um liquido preto que envolve algumas partes de sua armadura, |ganhou +1 de armadura|")
+                    if escolha == 2:
+                        bem += 1
+                        vidamax += 20
+                        print("Você sente que está fazendo o bem por esta região |+20 de vida|") 
+            else:
+                print("1 - |Igreja|\n2 - |Cemitério|\n3 - |Quartel General|\n4 - |Floresta|\n5 - |Castelo do Mago|")
 
 jogo()
