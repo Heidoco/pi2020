@@ -1,41 +1,55 @@
 import random
-
-class Personagem():
-    def __init__(self, nome, vida, ataque, armadura):
-        self.nome = nome
-        self.vida =  vida
-        self.ataque = ataque
-        self.armadura = armadura
-
-    def sofrer_dano(self,dano,critico):
-        if critico:
-            self.vida -= 2*dano
-        else:
-            self.vida -= dano
-
-class Inimigo():
-    def __init__(self, nome, vida, elemento, ataque, armadura):
-        self.nome = nome
-        self.vida =  vida
-        self.elemento = elemento
-        self.ataque = ataque
-        self.armadura = armadura
-
-    def sofrer_dano(self,dano,critico):
-        if critico:
-            self.vida -= 2*dano
-        else:
-            self.vida -= dano
-
-personagem = Personagem("Jorge", 100, 10,12) 
-satanas = Inimigo("Satanas", 100, 1, 5,15)
-zumbi = Inimigo("Zumbi", 50, 2, 5, 10)
-
-print(personagem.vida)
-#personagem.sofrer_dano(20, False)
-print(personagem.vida)
+from personagens import *
 
 
+
+def explorar_igreja(personagem,bem,mal,vidamax):
+    print("Você se aproxima de uma igreja que aparenta ter perdido a sua divindade, agora coberta por vinhas e com as paredes quebradas a igreja se mostra um simbolo de terror")
+    print("Ao entrar na igreja você encontra um monstro mutante de tamanho enorme que outrora poderia ter sido o padre")
+    print("O monstro se vira para você e corre na sua direção")
+    mutante = Inimigo("Mutante",150, 3, random.randint(20,25), 14)
+    resultado = combate(personagem, mutante)
+
+    if resultado:
+        return False
+
+    if personagem.vida > 0:
+        print("Ao derrotar o mutante, você vê seu corpo no chão, o que você faz?")
+        print("1 - Queimar no lugar em que ele foi derrotado\n2 - Enterrar com uma cerimônia")
+        escolha = int(input(""))
+        if escolha == 1:
+            print("Do corpo em chamas sai um liquido preto que envolve algumas partes de sua armadura, |ganhou +1 de armadura|")
+            return 1
+
+        if escolha == 2:
+            print("Você sente que está fazendo o bem por esta região |+20 de vida|")
+            return 2
+
+    else:
+        print("Você morre no combate contra o mutante.")
+        return False
+
+def explorar_quartel(personagem,bem,mal,vidamax):
+    print("Você se aproxima do que outrora fora um quartel general da cidade.")
+    print("Ao entrar você encontra diversos corpos jogados no chão e 10 soldados com olhos demoniacos olhando para você\n O lider se move em sua direção!")
+    general = Inimigo("General", random.randint(150,200),2,random.randint(20,30),16)
+    combate(personagem,general)
+
+    if personagem.vida > 0:
+        print("Ao derrotar o general, os seus subordinados saem correndo e o corpo desaparece, exceto por uma espada e um escudo")
+        print("1 - Pegar a espada\n2 - Pegar o escudo")
+        escolha = int(input(""))
+        if escolha == 1:
+            print("A espada é grande mas você consegue levantar |+5 de ataque|")
+            return 1
+
+        if escolha == 2:
+            print("O escudo é feito de aço e agora você está mais seguro |+2 de armadura|")
+            return 2
+
+    else:
+        print("Você morre no combate contra o General.")
+        return False
 
 class Magia():
     def __init__(self, nome, elemento, ataque, cura):
@@ -99,7 +113,7 @@ def combate(personagem,inimigo):
         print("| Vida Herói: " + str(personagem.vida))
         print("| Vida " + str(inimigo.nome) + ": " + str(inimigo.vida))
         print("|-------------------------------------------|")
-        print("\n1 - Atacar\n\n2 - Fugir \n\n3 - Magia")
+        print("|1 - Atacar\n|2 - Fugir \n|3 - Magia")
         escolha = input("\nQual a sua ação? : ")
         #Ataque
         if int(escolha) == 1:
@@ -134,35 +148,38 @@ def combate(personagem,inimigo):
             x = []
             print("Quais elementos você vai adicionar no seu feitiço?")
             while len(x) <= 1:
-                x.append(int(input("0 - Ar \n 1 - Fogo \n 2 - Terra \n 3 - Água\n ")))
+                x.append(int(input("*0 - Ar \n*1 - Fogo \n*2 - Terra \n*3 - Água\n ")))
             magia = lancar_magia(x)
-            print("Você conjurou um " + str(magia.nome))
             if magia.cura == True:
                 print(personagem.vida)
                 print("Você conjurou uma magia que ira curar/proteger você!")
+                print("Você conjurou um " + str(magia.nome))
                 personagem.sofrer_dano(magia.ataque, False)
                 print("Você recebe " + str(magia.ataque) + " de vida!")
                 print(personagem.vida)
             else:
-                print("Você conjurou uma magia de ataque!\n O " + str(inimigo.nome) + " vai tentar esquivar!")
+                print("\nVocê conjurou um " + str(magia.nome))
+                print("Você conjurou uma magia de ataque!\nO " + str(inimigo.nome) + " vai tentar esquivar!")
                 dado = random.randint(1,20)
                 print("Para esquiva o inimigo rolou: " + str(dado))
                 if dado == 1:
                     print("O " + str(inimigo.nome) + " falha horrivelmente ao esquivar, CRITICO!")
-                    critico = int(magia.ataque)
+                    critico = 2*int(magia.ataque)
                     inimigo.sofrer_dano(int(magia.ataque), True)
                     print("O "+ str(inimigo.nome)+" sofreu " + str(critico)+ " de dano")
+                    
 
-                if dado >= 10:
+                elif dado >= 10:
                     print("O "+ str(inimigo.nome)+" Esquivou e recebe somente metade do dano!")
                     desvio = int(magia.ataque)//2
                     inimigo.sofrer_dano(desvio,False)
-
-                else:
+                    print("O "+ str(inimigo.nome)+" sofreu " + str(desvio) + " de dano")
+                    
+                elif dado < 10 and dado > 1:
                     print("O " + str(inimigo.nome) + " falha ao esquivar, voce acerta!")
-                    inimigo.sofrer_dano(int(magia.ataque), True)
+                    inimigo.sofrer_dano(int(magia.ataque), False)
                     print("O "+ str(inimigo.nome)+" sofreu " + str(magia.ataque)+ " de dano")
-
+                    
         #Qualquer Outro
         else:
             print("Escolha uma opção válida!")
@@ -184,59 +201,92 @@ def combate(personagem,inimigo):
         else:
             print("Parabéns! Você venceu o combate!")
 
+
+
 def jogo():
 
-    print("Um nobre aventureiro chega as terras de Valak, agora dominadas por um terrivel demonio. Qual será o seu destino")
-    nome = input("Digite o nome do seu personagem")
+    print("|Um nobre aventureiro chega as terras de Valak, agora dominadas por um terrivel demonio. Qual será o seu destino?")
+    nome = input("|Digite o nome do seu personagem: ")
     personagem = Personagem(nome, 100, 10,12) 
     mal = 0
     bem = 0
+    igreja = False
+    quartel = False
     vidamax = personagem.vida
+    mortechefe = 0
 
     while True:
-        print("___________________________________________________________\n Você esta nas estradas, você pode:\n 1 - Acampar \n 2 - Ir para alguma area \n 3 - Inventário ")
+
+        print("|------------------------------------------------|\n| Você ja limpou " + str(mortechefe) + " áreas\n| Você esta nas estradas, você pode:\n| 1 - Acampar \n| 2 - Ir para alguma area \n| 3 - Status \n|------------------------------------------------|")
         escolha = input("Qual a sua ação? : ")
         if int(escolha) == 1:
             print(personagem.nome)
             sorte = random.randint(1,20)
             if sorte <= 7: 
-                print("Você foi atacado no meio do descanço!")
+                print("Cuidado "+str(personagem.nome)+"! Você foi atacado no meio do descanço!")
                 zumbi = Inimigo("Zumbi", 50, 2, 5, 10)
-                combate(personagem,satanas)
+                combate(personagem,zumbi)
             else:
                 print("Você descançou e agora se sente revigorado!")
-                print(personagem.vida)
                 cura = personagem.vida-vidamax
                 print("Cura:" + str(cura))
                 personagem.sofrer_dano(cura,False)
-                print(personagem.vida)
                 print(sorte)
 
         if int(escolha) == 2:
             print("Para onde você quer ir?")
-            mortechefe = 0
-            if mortechefe < 4: 
+            if mortechefe < 2: 
                 print("1 - |Igreja|\n2 - |Cemitério|\n3 - |Quartel General|\n4 - |Floresta|")
-                escolha = int(input(""))
+                lugar = int(input(""))
 #Igreja
-                if escolha == 1:
-                    print("Você se aproxima de uma igreja que aparenta ter perdido a sua divindade, agora coberta por vinhas e com as paredes quebradas a igreja se mostra um simbolo de terror")
-                    print("Ao entrar na igreja você encontra um monstro mutante de tamanho enorme que outrora poderia ter sido o padre")
-                    print("O monstro se vira para você e corre na sua direção")
-                    mutante = Inimigo("Mutante",150, 3, random.randint(20,25), 14)
-                    combate(personagem, mutante)
-                    print("Ao derrotar o mutante, você vê seu corpo no chão, o que você faz?")
-                    print("1 - Queimar no lugar em que ele foi derrotado\n2 - Enterrar com uma cerimônia")
-                    escolha = int(input(""))
-                    if escolha == 1:
-                        mal +=1
-                        personagem.armadura += 1 
-                        print("Do corpo em chamas sai um liquido preto que envolve algumas partes de sua armadura, |ganhou +1 de armadura|")
-                    if escolha == 2:
-                        bem += 1
-                        vidamax += 20
-                        print("Você sente que está fazendo o bem por esta região |+20 de vida|") 
+                if lugar == 1:
+                    if igreja:
+                        print("Você ja passou por aqui e tudo continua igual!")
+                        pass
+                    else:
+                        estado = explorar_igreja(personagem,bem,mal,vidamax)
+                        if estado:
+                            igreja = True
+                            mortechefe += 1
+                            if estado == 1:
+                                mal +=1
+                                personagem.armadura += 1 
+                            if estado == 2:
+                                bem +=1
+                                vidamax += 20
+                        else:
+                            return False
+#Quartel General
+                if lugar == 3:
+                    if quartel:
+                        print("Você ja passou por aqui e tudo continua igual!")
+                        pass
+                    else:
+                        estado = explorar_quartel(personagem,bem,mal,vidamax)
+                        if estado:
+                            quartel = True
+                            mortechefe += 1
+                            if estado == 1:
+                                mal +=1
+                                personagem.ataque += 5 
+                            if estado == 2:
+                                bem +=1
+                                personagem.armadura += 2
+                        else:
+                            return False
             else:
                 print("1 - |Igreja|\n2 - |Cemitério|\n3 - |Quartel General|\n4 - |Floresta|\n5 - |Castelo do Mago|")
 
-jogo()
+        if int(escolha) == 3:
+            print("|------------------------------------------------|")
+            print("|Nome: "+str(personagem.nome))
+            print("|Vida: "+str(vidamax)+" / "+str(personagem.vida))
+            print("|Armadura: " + str(personagem.armadura))
+            print("|Dano:" + str(personagem.ataque))
+            print("|Areas completas:" + str(mortechefe))
+            print("|------------------------------------------------|")
+            input("1 - Sair")
+
+
+if __name__ == "__main__":
+    jogo()
