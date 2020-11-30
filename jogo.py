@@ -60,19 +60,33 @@ def explorar_quartel(personagem,bem,mal,vidamax):
 
 def batalhar_final(personagem,bem,mal,vidamax):
     print("A vista do castelo te da arrepios, você percebe que todas as ações trouxeram você para esse lugar")
-    print("Ao entrar no castelo você encontra o mago demônio sentado no trono\n o seu poder é assustado")
+    print("Ao entrar no castelo você encontra o mago demônio sentado no trono o seu poder é assustador")
     escolha = input("Você se sente preparado para o combate ou vai fugir?\n1- Continuar\n2- Fugir")
-    if escolha == 2:
+    if escolha == "2":
         return "fugir"
     else:
-        print("Você parte para cima do inimigo final, ele se permanece sentado e só ira atacar após você der o primeiro golpe!!")
-        boss_final = Inimigo("Mago demônio", 500, 2, 50, 12)
-        combate(personagem,boss_final)
+        print("Você parte para cima do inimigo final, ele permanece imóvel e só ira atacar após você dar o primeiro golpe!!")
+        boss_final = Inimigo("Mago Demônio", 500, 2, 50, 12)
+        resultado = combate(personagem,boss_final)
+        if resultado == "fugir":
+            return "fugir"
         if personagem.vida > 0:
-            print
-
-    
-
+            print("Após uma longa batalha, você consegue deferir o ultimo golpe acabando assim com a vida do mago")
+            print("Você percebe que agora o ambiente já não possui a mesma atmosfera aterrorizante, as terras agora estão livres!")
+            if bem>=mal:
+                print("Ao lembrar das suas ações você percebe que liberou a cidade do mal, as pessoas que antes se escondiam agora podem voltar a viver")
+                print("Para sempre você será lembrado como o herói dessas terras! \n"+Fore.GREEN+ "Fim.")
+                quit()
+            else:
+                print("Você venceu, mas a que custo ? \nAs suas ações remoem-se na sua conciência, em um momento você se sente quebrado")
+                print("Do corpo do mago um espirito maligno sai, e encontra em você o seu novo hospedeiro\nVocê perde controle do seu corpo")
+                print("A cidade agora viverá novamente o terror até que um aventureiro bondoso chegue nas regiões!")
+                print(Fore.RED + "Fim.")
+                quit()
+        else:
+            print("Você morreu na luta contra o mago, a cidade continuará sob seu dominio e você será apenas uma triste lembrança")
+            print("Fim.")
+            quit()
 #_____________________________________________________________________________________________________Regioes
 
 class Magia():
@@ -230,9 +244,9 @@ def combate(personagem,inimigo):
 
 def jogo():
 
-    print(Fore.WHITE+ "|Um nobre aventureiro chega as terras de Valak, agora dominadas por um terrivel demonio. Qual será o seu destino?")
+    print(Fore.WHITE+ "|Um nobre aventureiro chega as terras de Smellass, agora dominadas por um terrivel demonio. Qual será o seu destino?")
     nome = input("|Digite o nome do seu personagem: ")
-    personagem = Personagem(nome, random.randint(100,170),100,14) 
+    personagem = Personagem(nome, random.randint(100,170),500,14) 
     mal = 0
     bem = 0
     igreja = False
@@ -261,7 +275,7 @@ def jogo():
         if escolha == "2":
             print("Para onde você quer ir?")
             if mortechefe < 2: 
-                print("1 - |Igreja|\n2 - |Cemitério|\n3 - |Quartel General|\n4 - |Floresta|")
+                print("1 - |Igreja|\n3 - |Quartel General|")
                 lugar = int(input(""))
 #Igreja
                 if lugar == 1:
@@ -308,7 +322,7 @@ def jogo():
                             else:
                                 return False
             else:
-                print("1 - |Igreja|\n2 - |Cemitério|\n3 - |Quartel General|\n4 - |Floresta|\n5 - |Castelo do Mago|")
+                print("1 - |Igreja|\n3 - |Quartel General|\n5 - |Castelo do Mago|")
                 lugar = int(input(""))
                 if lugar == 5:
                     batalhar_final(personagem,bem,mal,vidamax)
@@ -318,8 +332,8 @@ def jogo():
             print(Fore.LIGHTYELLOW_EX+"|Nome: "+str(personagem.nome))
             print(Fore.LIGHTYELLOW_EX+"|Vida: "+Fore.LIGHTGREEN_EX+str(vidamax)+" / "+Fore.GREEN+str(personagem.vida))
             print(Fore.LIGHTYELLOW_EX+"|Armadura: " + str(personagem.armadura))
-            print(Fore.LIGHTYELLOW_EX+"|Dano:" + str(personagem.ataque))
-            print(Fore.LIGHTYELLOW_EX+"|Areas completas:" + str(mortechefe))
+            print(Fore.LIGHTYELLOW_EX+"|Dano: " + str(personagem.ataque))
+            print(Fore.LIGHTYELLOW_EX+"|Areas completas: " + str(mortechefe))
             print(Fore.LIGHTYELLOW_EX+"|------------------------------------------------|")
             input("1 - Sair")
 
